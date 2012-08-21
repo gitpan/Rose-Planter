@@ -38,7 +38,7 @@
    "provides" : {
       "Rose::Planter" : {
          "file" : "lib/Rose/Planter.pm",
-         "version" : "0.28"
+         "version" : "0.29"
       },
       "Rose::Planter::ConventionManager" : {
          "file" : "lib/Rose/Planter/ConventionManager.pm",
@@ -63,5 +63,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.28"
+   "version" : "0.29"
 }
