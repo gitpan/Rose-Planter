@@ -4,7 +4,7 @@ package My::DB;
 use FindBin;
 use IO::File;
 use base 'Rose::Planter::DB';
-use File::Temp;
+use File::Temp qw( tempdir );
 
 BEGIN {
     __PACKAGE__->register_databases(
@@ -12,7 +12,7 @@ BEGIN {
         # Really we need a Module::Build::Database::SQLite, but until then :
         register_params => {
             driver   => "sqlite",
-            database => File::Temp->new(),
+            database => tempdir( CLEANUP => 1) . "/db.sqlite",
         }
     );
 }

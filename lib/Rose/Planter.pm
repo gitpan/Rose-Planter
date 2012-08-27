@@ -9,7 +9,7 @@ Rose::Planter - Keep track of classes created with Rose::DB::Object::Loader.
 
 =cut
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 =head1 SYNOPSIS
 
@@ -242,6 +242,16 @@ sub find_object {
 =head1 NOTES
 
 This is a beta release.  The API is subject to change without notice.
+
+=head1 AUTHORS
+
+Marty Brandon
+
+Brian Duggan
+
+Graham Ollis
+
+Curt Tilmes
 
 =head1 BUGS
 

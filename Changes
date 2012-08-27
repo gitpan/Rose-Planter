@@ -2,6 +2,10 @@ Revision history for Rose-Planter
 
 0.28    Thu Aug 16 13:14:29 EDT 2012
         First release
+
 0.29    Tue Aug 21 17:23:07 EDT 2012
         No Makefile.PL support
+
+0.30    Mon Aug 27 10:26:40 EDT 2012
+        Fixes for BSD (Graham)
 

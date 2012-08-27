@@ -21,7 +21,6 @@ my $builder = Module::Build->new(
         'YAML::Syck' => 0, # optional Rose dependency
     },
     add_to_cleanup      => [ 'Rose-Planter-*' ],
-    create_makefile_pl => 'traditional',
 );
 
 $builder->create_build_script();
