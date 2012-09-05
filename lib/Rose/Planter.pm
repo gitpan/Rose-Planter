@@ -9,9 +9,13 @@ Rose::Planter - Keep track of classes created with Rose::DB::Object::Loader.
 
 =cut
 
-our $VERSION = '0.30';
+our $VERSION = '0.32';
 
 =head1 SYNOPSIS
+
+In My/Objects.pm :
+
+    package My::Objects;
 
     use Rose::Planter
         loader_params => {
@@ -23,15 +27,27 @@ our $VERSION = '0.30';
         },
         convention_manager_params => {};
 
-    my $class = Rose::Planter->find_class("my_table");
+In plant.pl :
 
+    #!/usr/bin/env perl
+
+    Rose::Planter->plant("My::Objects" => "My/Objects/autolib");
+
+In another file :
+
+    use My::Objects;
+
+    my $class = Rose::Planter->find_class("my_table");
     my $object = Rose::Planter->find_object("my_table","my_key1","my_key2");
+
 
 =head1 DESCRIPTION
 
-This is a thin layer above Rose::DB::Object::Loader for keeping
+This is a thin layer above L<Rose::DB::Object::Loader> for keeping
 track of and managing classes which are created based on a database
-schema.
+schema.  It will transparently either query the database using
+L<Rose::DB::Object::Loader> or use an auto-generated class
+hierarchy.
 
 This module works well with L<Module::Build::Database> and
 L<Clustericious> to create a simple RESTful service based on
@@ -49,20 +65,22 @@ connected to the primary table with a many-to-one relationship.
 
 =head1 FUNCTIONS
 
-=over
-
 =cut
 
 use Rose::DB::Object::Loader;
 use Rose::Planter::ConventionManager;
 use Rose::Planter::Gardener;
 use List::MoreUtils qw/mesh/;
+use File::Path qw/mkpath/;
+use File::Slurp qw/slurp/;
+use Module::Find;
 use strict;
 use warnings;
 
 our %table2Class;    # mapping from table name to class name.
 our %deftable2Class; # map for prefix of tables ending in _def to class name.
 our %plural2Class;   # map plurals of tables to manager classes
+our %are_planting;   # classes we are planting right now
 {
 my $_logfp;
 sub _trace {
@@ -77,8 +95,103 @@ sub _trace {
 }
 
 sub import {
+    my ($class, %p) = @_;
+    return unless %p && keys %p;
+    my $from = caller;
+    return $class->_read_classes(%p, seed => $from) || $class->_write_classes(%p, seed => $from) || $class->_setup_classes(%p);
+}
+
+sub _class2path {
+    my $cl = shift;
+    $cl =~ s[::][/]g;
+    return $cl;
+}
+
+sub _read_classes {
     my ($class, %params) = @_;
-    $class->_setup_classes(%params);
+    my $seed = $params{seed};
+    return 0 if $seed && $are_planting{$seed};
+    my $seed_dir = _class2path($seed).'.pm';
+    my $inc_dir = $INC{$seed_dir} or return 0;  # e.g. testing
+    my ($abs_seed_dir) = $inc_dir=~ m{^(.*)/$seed_dir$};
+
+    my $prefix = $params{loader_params}{class_prefix} ;
+    my $autolib = $seed. '::autolib';
+    my $autodir = join '/', $abs_seed_dir, _class2path($autolib);
+    _trace "Looking for $autolib in $autodir";
+    unshift @INC, $autodir;
+    local $SIG{__WARN__} = sub {
+        return if $_[0] =~ /^subroutine.*redefined/i;
+        warn @_;
+    };
+    my @used = useall $autolib;
+    _trace "used $_" for @used;
+    shift @INC;
+    unless (@used) {
+        warn "# No autolib found ($autolib), try :\n";
+        warn "# Rose::Planter->plant(q[$seed] => q[$autodir])\n";
+        return 0;
+    };
+    do { s/${autolib}:://; } for @used;
+    $class->_setup_classes(made => \@used, %params);
+    return 1;
+}
+
+sub _sow {
+    my $class = shift;
+    my $seed = shift;
+    my $dir   = shift;
+    $are_planting{$seed} = $dir;
+}
+
+=head2 plant
+
+    Rose::Planter->plant($class => $dir)
+
+Write a class hierarchy to disk.
+
+=cut
+
+sub plant {
+    my $class = shift;
+    my $seed = shift;
+    my $dir = shift;
+    $class->_sow($seed => $dir);
+    if ($INC{_class2path($seed).'.pm'}) {
+        die "Cannot plant $seed since it has already been loaded.";
+    }
+    eval "use $seed";
+    die $@ if $@;
+}
+
+sub _add_postamble {
+    my ($db_class, $met,$manager) = @_;
+    my $want = ($manager || $met->class);
+    my $file = $want;
+    $file =~ s[::][/]g;
+    $file .= ".pm";
+    my ($found) = map "$_/$file", grep { -e "$_/$file" } @INC;
+    my $setdb = $db_class && !$manager ? "\n sub init_db { $db_class->new() };\n" : "";
+    if ($found) {
+        _trace "# adding functions from $found";
+        return join "", $setdb,  "# EXTRAS LOADED FROM $found : \n", slurp $found;
+    }
+    return "$setdb\n# NOTHING LOADED FOR $want";
+}
+
+sub _write_classes {
+    my $class = shift;
+    my %params = @_;
+    my $dir;
+    my $seed = $params{seed} or die "no seed";
+    return 0 unless $dir = $are_planting{$seed};
+    mkpath $dir;
+    warn "# writing classes to $dir\n";
+    my $db_class = $params{loader_params}{db_class};
+    $params{loader_params}{module_dir} = $dir;
+    $params{loader_params}{module_postamble} = sub { _add_postamble($db_class, @_) };
+    $class->_setup_classes(%params, make_modules => 1);
+    return 1;
 }
 
 sub _setup_classes {
@@ -100,7 +213,8 @@ sub _setup_classes {
         convention_manager          => "Rose::Planter::ConventionManager",
         %loader_params
     );
-    my @made = $loader->make_classes; # include_tables => ...
+    my $method = $params{make_modules} ? "make_modules" : "make_classes";
+    my @made = $params{made} ? @{ $params{made} } : $loader->$method; # include_tables => ...
     die "did not make any classes" unless @made > 0;
     # Keep track of what we made
     for my $made (@made) {
@@ -125,8 +239,10 @@ sub _setup_classes {
             $plural2Class{$plural} = $made;
         }
         # Load any extra functions, too.
-        eval "use $made";
-        die "Errors using $made : $@" if $@ && $@ !~ /Can't locate/;
+        unless ($method eq 'make_modules') {
+            eval "use $made";
+            die "Errors using $made : $@" if $@ && $@ !~ /Can't locate/;
+        }
     }
 
     my %nested_tables = %{ $params{nested_tables} || {} };
@@ -136,9 +252,9 @@ sub _setup_classes {
     }
 }
 
-=item tables
+=head2 tables
 
-Return a list of all tables
+Return a list of all tables.
 
 =cut
 
@@ -146,7 +262,7 @@ sub tables {
     return (keys %table2Class, keys %deftable2Class);
 }
 
-=item regex_for_tables
+=head2 regex_for_tables
 
 Create a regex that matches all the tables.
 
@@ -161,9 +277,9 @@ sub regex_for_tables {
     return qr[$re];
 }
 
-=item plurals
+=head2 plurals
 
-Return a list of all plurals
+Return a list of all plurals.
 
 =cut
 
@@ -171,7 +287,7 @@ sub plurals {
     return keys %plural2Class;
 }
 
-=item regex_for_plurals
+=head2 regex_for_plurals
 
 Create a regex that matches all the plurals.
 
@@ -183,7 +299,7 @@ sub regex_for_plurals {
     return qr[$re];
 }
 
-=item find_class
+=head2 find_class
 
 Given the name of a database table, return the object class associated
 with it.  e.g.
@@ -210,7 +326,7 @@ sub find_class {
     return $table2Class{$table} || $deftable2Class{$table} || $plural2Class{$table};
 }
 
-=item find_object
+=head2 find_object
 
 Given a table and a primary or other unique key(s), find a load an object.
 
@@ -237,8 +353,6 @@ sub find_object {
     return;
 }
 
-=back
-
 =head1 NOTES
 
 This is a beta release.  The API is subject to change without notice.
@@ -256,11 +370,6 @@ Curt Tilmes
 =head1 BUGS
 
 Currently only really used/tested against postgres.
-
-=head1 TODO
-
-Auto generate perl code for classes, and rebuild as needed, rather than
-keeping all the classes in memory.
 
 =cut
 

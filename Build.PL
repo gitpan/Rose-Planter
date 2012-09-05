@@ -18,6 +18,7 @@ my $builder = Module::Build->new(
         'DateTime::Format::Pg' => 0,
         'DBD::SQLite' => 0,
         'Log::Log4perl' => 0,
+        'Module::Find' => 0,
         'YAML::Syck' => 0, # optional Rose dependency
     },
     add_to_cleanup      => [ 'Rose-Planter-*' ],

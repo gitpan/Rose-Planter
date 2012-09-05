@@ -9,3 +9,9 @@ Revision history for Rose-Planter
 0.30    Mon Aug 27 10:26:40 EDT 2012
         Fixes for BSD (Graham)
 
+0.31    Tue Sep  4 15:52:11 EDT 2012
+        Added caching ability (i.e. plant())
+
+0.32    Wed Sep  5 10:25:41 EDT 2012
+        Documentation update
+

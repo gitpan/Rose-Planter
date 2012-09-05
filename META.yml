@@ -10,6 +10,7 @@ build_requires:
   JSON::XS: 0
   Log::Log4perl: 0
   Module::Build::Database: 0
+  Module::Find: 0
   Rose: 0
   Rose::DB::Object: 0.789
   Test::More: 0
@@ -26,7 +27,7 @@ name: Rose-Planter
 provides:
   Rose::Planter:
     file: lib/Rose/Planter.pm
-    version: 0.30
+    version: 0.32
   Rose::Planter::ConventionManager:
     file: lib/Rose/Planter/ConventionManager.pm
     version: 0
@@ -41,4 +42,4 @@ provides:
     version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.30
+version: 0.32

@@ -1,5 +1,9 @@
 #!perl
 
+BEGIN {
+    $SIG{__DIE__} = \&Carp::confess;
+}
+
 package My::DB;
 use FindBin;
 use IO::File;

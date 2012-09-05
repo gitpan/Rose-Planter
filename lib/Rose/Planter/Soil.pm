@@ -112,6 +112,5 @@ sub nested_tables {
     return $NestedMap{$class};
 }
 
-
 1;
 
