@@ -15,3 +15,5 @@ Revision history for Rose-Planter
 0.32    Wed Sep  5 10:25:41 EDT 2012
         Documentation update
 
+0.33    Wed Oct 17 15:08:10 EDT 2012
+        setmoduledirs to only load the right autolib

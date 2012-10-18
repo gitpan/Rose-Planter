@@ -4,7 +4,7 @@
       "Brian Duggan <brian.duggan@nasa.gov>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.112621",
    "license" : [
       "perl_5"
    ],
@@ -16,30 +16,30 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "DBD::SQLite" : "0",
-            "DBIx::Connector" : "0",
-            "DateTime::Format::Pg" : "0",
-            "JSON" : "0",
-            "JSON::XS" : "0",
-            "Log::Log4perl" : "0",
-            "Module::Build::Database" : "0",
-            "Module::Find" : "0",
-            "Rose" : "0",
+            "DBD::SQLite" : 0,
+            "DBIx::Connector" : 0,
+            "DateTime::Format::Pg" : 0,
+            "JSON" : 0,
+            "JSON::XS" : 0,
+            "Log::Log4perl" : 0,
+            "Module::Build::Database" : 0,
+            "Module::Find" : 0,
+            "Rose" : 0,
             "Rose::DB::Object" : "0.789",
-            "Test::More" : "0",
-            "YAML::Syck" : "0"
+            "Test::More" : 0,
+            "YAML::Syck" : 0
          }
       },
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.4"
+            "Module::Build" : "0.40"
          }
       }
    },
    "provides" : {
       "Rose::Planter" : {
          "file" : "lib/Rose/Planter.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "Rose::Planter::ConventionManager" : {
          "file" : "lib/Rose/Planter/ConventionManager.pm",
@@ -64,5 +64,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.32"
+   "version" : "0.33"
 }
