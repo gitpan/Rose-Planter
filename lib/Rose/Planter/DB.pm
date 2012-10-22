@@ -108,8 +108,11 @@ sub register_databases {
     my $module_name     = $args{module_name} or die "no module name passed";
     my $conf            = $args{conf};
     my $register_params = $args{register_params} || {};
-    my $mbd = $ENV{HARNESS_ACTIVE} ? Module::Build::Database->current : undef;
-    my $we_are_testing = ( $mbd && $ENV{HARNESS_ACTIVE} && $mbd->module_name eq $module_name );
+    my $mbd = $ENV{HARNESS_ACTIVE}
+         && Module::Build::Database->can('current')
+         && -d './_build'
+         ? Module::Build::Database->current : undef;
+    my $we_are_testing = ( $mbd && $mbd->module_name eq $module_name );
     my $live_env_var = ( uc $module_name ) . '_LIVE';
     my $we_are_live = $ENV{$live_env_var} ? 1 : 0;
     die "no conf argument passed" if !$conf && !$we_are_testing;
