@@ -27,7 +27,7 @@ name: Rose-Planter
 provides:
   Rose::Planter:
     file: lib/Rose/Planter.pm
-    version: 0.34
+    version: 0.35
   Rose::Planter::ConventionManager:
     file: lib/Rose/Planter/ConventionManager.pm
     version: 0
@@ -42,4 +42,4 @@ provides:
     version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.34
+version: 0.35

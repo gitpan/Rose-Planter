@@ -15,7 +15,7 @@ based on configuration files.
 package Rose::Planter::DB;
 use Log::Log4perl qw /:easy/;
 
-use Module::Build::Database;
+eval { use Module::Build::Database; };
 use DateTime::Format::Pg;
 use DBIx::Connector;
 use List::MoreUtils qw/mesh/;
@@ -97,7 +97,10 @@ conf: a configuration object which will be queried as follows :
 This should return a hash with keys such as "database", "schema", and "host"
 which correspond to the parameters sent to Rose::DB::register_db.
 
-The "test" database will be determined using information from Module::Build::Database.
+If L<Module::Build::Database> is being used, the "test" database will be
+determined using information stored in the _build directory.  This allows
+the same database to be re-used during an entire './Build test'.
+
 When HARNESS_ACTIVE is true, conf should not be passed.
 
 =cut

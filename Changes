@@ -1,5 +1,8 @@
 Revision history for Rose-Planter
 
+0.35    Mon Mar 25 08:32:05 EDT 2013
+        Made Module::Build::Database optional.
+
 0.34    Mon Oct 22 10:27:28 EDT 2012
         Fix tests for Clustericious under Extutils::MakeMaker
 

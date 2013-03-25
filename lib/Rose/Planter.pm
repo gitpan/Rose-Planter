@@ -9,7 +9,7 @@ Rose::Planter - Keep track of classes created with Rose::DB::Object::Loader.
 
 =cut
 
-our $VERSION = '0.34';
+our $VERSION = '0.35';
 
 =head1 SYNOPSIS
 
