@@ -20,9 +20,7 @@ use Log::Log4perl qw/:easy/;
 use base 'Rose::DB::Object';
 use Rose::DB::Object::Helpers qw/:all/;
 
-=over 
-
-=item as_hash
+=head2 as_hash
 
 Like Rose::DB::Object::Helper::as_tree but with a few differences :
 
@@ -94,7 +92,7 @@ sub as_hash {
     return \%h;
 }
 
-=item nested_tables
+=head2 nested_tables
 
 Get or set a list of "nested table" associated with this
 class.  These are tables which are always retrieved alongside

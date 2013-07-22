@@ -11,15 +11,13 @@ a few tweaks.
 
 =head1 METHODS
 
-=over
-
 =cut
 
 use base 'Rose::DB::Object::ConventionManager';
 
 use strict;
 
-=item auto_relationship_name_one_to_many
+=head2 auto_relationship_name_one_to_many
 
 By default if "foo_params" is a child of a table "foo",
 we remove the the "foo_" portion from "foo_params".

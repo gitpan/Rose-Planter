@@ -18,7 +18,7 @@ build_requires:
 configure_requires:
   Module::Build: 0.40
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4003, CPAN::Meta::Converter version 2.112621'
+generated_by: 'Module::Build version 0.4005, CPAN::Meta::Converter version 2.120630'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -27,7 +27,7 @@ name: Rose-Planter
 provides:
   Rose::Planter:
     file: lib/Rose/Planter.pm
-    version: 0.35
+    version: 0.36
   Rose::Planter::ConventionManager:
     file: lib/Rose/Planter/ConventionManager.pm
     version: 0
@@ -42,4 +42,4 @@ provides:
     version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.35
+version: 0.36

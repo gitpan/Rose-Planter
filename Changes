@@ -1,5 +1,8 @@
 Revision history for Rose-Planter
 
+0.36    Mon Jul 22 08:46:22 EDT 2013
+        pod changes, .gitignore
+
 0.35    Mon Mar 25 08:32:05 EDT 2013
         Made Module::Build::Database optional.
 
